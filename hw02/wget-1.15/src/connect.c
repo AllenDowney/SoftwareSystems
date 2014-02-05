@@ -55,6 +55,7 @@ as that of the covered work.  */
 #include <string.h>
 #include <sys/time.h>
 #include "utils.h"
+#include "ptimer.h"
 #include "host.h"
 #include "connect.h"
 #include "hash.h"
@@ -254,6 +255,12 @@ connect_with_timeout (int fd, const struct sockaddr *addr, socklen_t addrlen,
   return ctx.result;
 }
 
+// ABD
+double abd_start_time;
+double abd_connect_time;
+struct ptimer *abd_timer;
+// end ABD
+
 /* Connect via TCP to the specified address and port.
 
    If PRINT is non-NULL, it is the host name to print that we're
@@ -265,6 +272,11 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
   struct sockaddr_storage ss;
   struct sockaddr *sa = (struct sockaddr *)&ss;
   int sock;
+
+  // ABD
+  struct timeval abd_tv[1];
+  abd_timer = ptimer_new ();
+  // end ABD
 
   /* If PRINT is non-NULL, print the "Connecting to..." line, with
      PRINT being the host name we're connecting to.  */
@@ -350,6 +362,12 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
         }
     }
 
+  // ABD
+  ptimer_reset (abd_timer);
+  gettimeofday (abd_tv, NULL);
+  abd_start_time = abd_tv->tv_sec + abd_tv->tv_usec/1e6;
+  // end ABD
+
   /* Connect the socket to the remote endpoint.  */
   if (connect_with_timeout (sock, sa, sockaddr_size (sa),
                             opt.connect_timeout) < 0)
@@ -357,6 +375,11 @@ connect_to_ip (const ip_address *ip, int port, const char *print)
 
   /* Success. */
   assert (sock >= 0);
+
+  // ABD
+  abd_connect_time = ptimer_measure (abd_timer) * 1000.0;
+  // end ABD
+
   if (print)
     logprintf (LOG_VERBOSE, _("connected.\n"));
   DEBUGP (("Created socket %d.\n", sock));
@@ -756,9 +779,32 @@ static int
 sock_read (int fd, char *buf, int bufsize)
 {
   int res;
+
+  // ABD
+  char filename[128];
+  static FILE *fp = NULL;
+  static int total;
+
+  if (fp == NULL) {
+    sprintf (filename, "timing.%.6lf", abd_start_time);
+    fp = fopen (filename, "w");
+    fprintf (fp, "%.3lf\t%d\n", abd_connect_time, 0);
+    total = 0;
+  }
+  // end ABD
+
+
   do
     res = read (fd, buf, bufsize);
   while (res == -1 && errno == EINTR);
+
+  // ABD
+  if (res > 0) {
+    total += res;
+    fprintf (fp, "%.3f\t%d\n", ptimer_measure (abd_timer) * 1000.0, total);
+  }
+  // end ABD
+
   return res;
 }
 
