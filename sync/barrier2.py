@@ -1,4 +1,4 @@
-# barrier non-solution
+# barrier solution
 
 ## initalization
 count = 0
