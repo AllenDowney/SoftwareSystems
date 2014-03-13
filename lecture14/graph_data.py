@@ -1,4 +1,5 @@
 import thinkplot
+import matplotlib.pyplot as pyplot
 
 d = {}
 for line in open('data'):
@@ -15,4 +16,5 @@ for stride in sorted(d.keys()):
     thinkplot.plot(xs, ys, label=str(stride))
     print stride, len(d[stride])
 
-thinkplot.show(xscale='log')
+pyplot.xscale('log', basex=2)
+thinkplot.show(xlabel='size (B)', ylabel='access time (ns)')
