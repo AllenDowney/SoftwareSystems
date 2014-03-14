@@ -362,6 +362,7 @@ class Sync(Gui):
     def update_views(self):
         """Loops through the views and updates them."""
         for key, view in self.views.iteritems():
+            print key, view, self.locals[key]
             view.update(self.locals[key])
 
     def clear_views(self):
@@ -771,14 +772,16 @@ class Thread:
         for key in defined:
             self.sync.views[key] = self.row
 
-        if defined or changed:
-            self.sync.update_views()
-
         # either skip to the next line or to the end of a false conditional
         if flag:
             self.next_row()
         else:
             self.skip_body()
+
+        # TODO: fix diff_dict to detect changes in Semaphores.
+        # in the meantime, always update the views
+        #if defined or changed:
+        self.sync.update_views()
 
         return source
 
