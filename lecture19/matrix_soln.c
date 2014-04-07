@@ -21,7 +21,7 @@ Matrix *make_matrix(int rows, int cols) {
     int i;
     Matrix *matrix = malloc(sizeof(Matrix));
 
-    matrix->data = malloc(rows * cols * sizeof(double *));
+    matrix->data = malloc(rows * sizeof(double *));
     matrix->rows = rows;
     matrix->cols = cols;
 
