@@ -155,6 +155,20 @@ double *row_sum(Matrix *A) {
     return res;
 }
 
+/* 
+   http://en.wikipedia.org/wiki/Magic_square
+
+   A magic square is an arrangement of numbers (usually integers) in a
+   square grid, where the numbers in each row, and in each column, and
+   the numbers in the forward and backward main diagonals, all add up
+   to the same number. 
+
+   Write a function called is_magic_square() that takes a matrix and 
+   returns an int, 1 if the matrix is a magic square, and 0 otherwise.
+
+   Feel free to use row_sum().
+*/
+
 
 int main() {
     int i;
