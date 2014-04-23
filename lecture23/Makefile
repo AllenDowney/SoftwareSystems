@@ -7,6 +7,9 @@ OBJ = glibhash.o
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
+counter: counter.c semaphore.c semaphore.h
+	gcc -Wall -o counter counter.c semaphore.c -lpthread
+
 glibhash: $(OBJ)
 	gcc -o $@ $^ $(CFLAGS) $(LIBS)
 
