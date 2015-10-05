@@ -12,7 +12,7 @@ License: Creative Commons Attribution-ShareAlike 3.0
 
 typedef struct node {
     int val;
-    struct node * next;
+    struct node *next;
 } Node;
 
 Node *make_node(int val, Node *next) {
